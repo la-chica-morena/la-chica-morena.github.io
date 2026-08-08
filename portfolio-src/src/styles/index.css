@@ -85,9 +85,14 @@ button {
   left: 0;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.82;
+  opacity: 0.55;
   pointer-events: none;
 }
+/* Scrim that keeps the scene off the hero copy. The 90deg layer is the important
+   one: it stays opaque over the left text column and clears by 58%, so the cards
+   keep their presence on the right where the rig actually orbits. The radial is
+   offset to match that rig position (Scene.jsx puts it at world x = 1.9 above
+   900px). Every layer uses var(--bg), so the high-contrast theme follows for free. */
 .scene-shell:after {
   content: "";
   position: absolute;
@@ -96,18 +101,24 @@ button {
   bottom: 0;
   left: 0;
   background:
+    linear-gradient(
+      90deg,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 70%, transparent) 34%,
+      transparent 58%
+    ),
     radial-gradient(
-      circle at center,
+      circle at 68% 45%,
       transparent 0,
-      transparent 36%,
-      var(--bg) 74%
+      transparent 42%,
+      var(--bg) 92%
     ),
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--bg) 24%, transparent),
       var(--bg)
     );
-  opacity: 0.7;
+  opacity: 0.82;
 }
 .scene-shell__mount,
 .scene-shell__mount canvas {
@@ -327,9 +338,9 @@ main {
   font-size: 6rem;
   font-weight: 400;
   text-shadow:
-    0 0 2px var(--bg),
-    0 0 18px var(--bg),
-    0 0 34px var(--bg);
+    0 0 3px var(--bg),
+    0 0 22px var(--bg),
+    0 0 44px var(--bg);
 }
 .hero h1 span,
 .hero h1 strong {
@@ -349,8 +360,8 @@ main {
   line-height: 1.55;
   color: var(--muted);
   text-shadow:
-    0 0 2px var(--bg),
-    0 0 18px var(--bg);
+    0 0 3px var(--bg),
+    0 0 22px var(--bg);
 }
 .hero__actions,
 .contact__actions {
@@ -697,12 +708,31 @@ main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* Matches the rig breakpoint in Scene.jsx, which recentres it below 900px. Once the
+   layout is single-column the copy spans the full width, so the left-weighted scrim
+   would dim the wrong side - fall back to a uniform centred fade. */
+@media (max-width: 900px) {
+  .scene-shell:after {
+    background:
+      radial-gradient(
+        circle at center,
+        transparent 0,
+        transparent 34%,
+        var(--bg) 76%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg) 24%, transparent),
+        var(--bg)
+      );
+  }
+}
 @media (max-width: 760px) {
   body {
     background-size: 56px 56px;
   }
   .scene-shell {
-    opacity: 0.44;
+    opacity: 0.4;
   }
   .site-header {
     grid-template-columns: auto 1fr auto;
